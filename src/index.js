@@ -1,61 +1,37 @@
-import cardStyle from './styles/cardStyle';
+import Menu from './components/menu/menu.component';
+import Wrapper from './components/wrapper/wrapper.component';
+import Card from './components/card/card.component';
+import config from './config';
+import h from './helpers';
 import './scss/main.scss';
 
-// class Element {
-//   constructor(elem) {
-//     this.elem = document.createElement(elem);
-//   }
-//   addStyle(styles) {
-//     for(const style in styles) {
-//         this.elem.style[style] = styles[style];
-//     }
-//     return this;
-//   }
-//   append(parent) {
-//     parent.appendChild(this.elem);
-//     return this;
-//   }
-//   addClass(className) {
-//     this.elem.classList.add(className);
-//     return this;
-//   }
-//   addEvent(event, fb) {
-//     this.elem.addEventListener(event, fb);
-//     return this;
-//   }
-// }
-// figure = document.createElement('figure');
-
-let arr = [document.createElement('figure'),document.createElement('figure'),document.createElement('figure'),document.createElement('figure'),document.createElement('figure')];
-const section = document.querySelector('#table');
-
-// arr.map(elem => {
-//   elem
-//     .addStyle(cardStyle)
-//     .addClass('wrapper')
-//     .addEvent('click', e => e.target.style.background = e.target.style.background === 'blue' ? 'red' : 'blue')
-//     .append(section);
-// });
-// const promise = new Promise((resolve, reject) => {
-//   resolve(new Element('figure'));
-// });
-
-// promise
-//   .then(figure => figure.addStyle(cardStyle))
-//   .then(figure => figure.addClass('wrapper'))
-//   .then(figure => figure.addEvent('click', e => e.target.style.background = e.target.style.background === 'blue' ? 'red' : 'blue'))
-//   .then(figure => figure.append(section))
-//   .catch(err => console.log(err));
-const addEventFull = event => fb => elem => { elem.addEventListener(event, fb); return elem};
-const addClassFull = className => elem => { elem.classList.add(className); return elem};
-const appendFull = parent => elem => { parent.appendChild(elem); return elem};
-
-const addEvent = addEventFull('click')(e => e.target.style.background = e.target.style.background === 'blue' ? 'red' : 'blue');
-const addClass = addClassFull('card');
-const append = appendFull(section);
-
-const compose = f => g => x => f(g(x));
-
-// arr.map(figure => append(addClass(addEvent(figure))));
-// arr.map(figure => compose(compose(append)(addClass))(addEvent)(figure));
-arr.map(compose(compose(append)(addClass))(addEvent));
+const selector = h.find('select');
+selector.addEventListener('change', e => {
+  config.cards = +e.target.value;
+  console.log(config);
+});
+//----------------------- create menus and buttons ------------------------------
+// const menu = new Menu();
+// menu
+//   .append(complexity)
+//   .append(rules)
+//   .append(rules)
+//   .makeFragment()
+//   .appendToBody();
+//----------------------- create and append the main board ----------------------
+const start = h.find('.menu > button');
+start.addEventListener('click', e => {
+  let onPageWrapper = h.find('section.wrapper');
+  const rows = h.newArr(config.rows).map(x => new Wrapper());
+  rows.map(row => {
+    if(onPageWrapper) while(onPageWrapper) {
+      h.find('body').removeChild(onPageWrapper);
+      onPageWrapper = h.find('section.wrapper')
+    }
+    h.newArr(config.cards).map(x => new Card()).map(card => {
+      row.append(card.elem);
+    });
+    row.makeFragment().appendToBody();
+  });
+});
+//-------------------------------------------------------------------------------
