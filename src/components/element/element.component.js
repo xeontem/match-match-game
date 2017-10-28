@@ -21,8 +21,4 @@ export default class Element {
     if(Element.fragmented) document.body.appendChild(Element.fragment);
     else throw new Error('You need create fragment before appending to DOM.');
   }
-
-  clear() {
-    while(this.elem.children.length) this.elem.removeChild();
-  }
 }
