@@ -1,6 +1,6 @@
 import Menu from './components/menu/menu.component';
-import Wrapper from './components/wrapper/wrapper.component';
-import Card from './components/card/card.component';
+// import Wrapper from './components/wrapper/wrapper.component';
+// import Card from './components/card/card.component';
 import config from './config';
 import { h } from './helpers';
 import './scss/main.scss';
@@ -35,9 +35,22 @@ h.on(h.find('body'), 'click', e => {
 // }, false);
 // h.on(h.find('body p'), 'click', function(e) { e.stopPropagation(); alert(this.tagName)}, false);
 //----------------------- create and append the main board ----------------------
+// const start = h.find('.menu > button');
+// start.addEventListener('click', e => (h.remove('body', 'section.wrapper'),
+//   h.newArr(config.rows).map(x => new Wrapper())
+//     .map(row => (h.newArr(config.cards).map(x => new Card())
+//       .map(card => row.append(card.append(h.create('p', '#')).elem)), row.makeFragment().appendToBody()))));
+//-------------------------------------------------------------------------------
+
 const start = h.find('.menu > button');
 start.addEventListener('click', e => (h.remove('body', 'section.wrapper'),
-  h.newArr(config.rows).map(x => new Wrapper())
-    .map(row => (h.newArr(config.cards).map(x => new Card())
-      .map(card => row.append(card.append(h.create('p', '#')).elem)), row.makeFragment().appendToBody()))));
-//-------------------------------------------------------------------------------
+  import(/* webpackChunkName: "wrapper" */ './components/wrapper/wrapper.component.js').then(Wrapper => {
+    Wrapper = Wrapper.default;
+    import(/* webpackChunkName: "card" */ './components/card/card.component.js').then(Card => {
+      Card = Card.default
+      h.newArr(config.rows).map(x => new Wrapper())
+        .map(row => (h.newArr(config.cards).map(x => new Card())
+        .map(card => row.append(card.append(h.create('p', '#')).elem)), row.makeFragment().appendToBody()));
+    });
+  })
+));

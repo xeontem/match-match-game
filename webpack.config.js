@@ -8,7 +8,8 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 module.exports = {
     entry: {
       app: './src/index.js',
-      // print: './src/assets/favicon.png'
+      // wrapper: './src/components/wrapper/wrapper.component.js',
+      // card: './src/components/card/card.component.js'
     },
     devtool: 'source-map',
     // watch: true,
@@ -19,6 +20,7 @@ module.exports = {
     },
     output: {
       filename: '[name].bundle.js',
+      chunkFilename: '[name].chunk.js',
       path: path.resolve(__dirname, 'dist')
     },
     module: {
@@ -44,6 +46,7 @@ module.exports = {
       new webpack.NamedModulesPlugin(),
       new webpack.HotModuleReplacementPlugin(),
       new CleanWebpackPlugin(['dist']),
+      new webpack.optimize.CommonsChunkPlugin({name: 'common'}),
       new HtmlWebpackPlugin({
         title: 'match-match-game',
         favicon: './src/assets/favicon.png',
