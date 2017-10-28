@@ -61,7 +61,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "9514a496269a37721c94"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "a382ee7e62ccb1a5ecc2"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -732,8 +732,10 @@
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__element_element_component__ = __webpack_require__("./src/components/element/element.component.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__card_style_scss__ = __webpack_require__("./src/components/card/card.style.scss");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__card_style_scss___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__card_style_scss__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers__ = __webpack_require__("./src/helpers.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__card_style_scss__ = __webpack_require__("./src/components/card/card.style.scss");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__card_style_scss___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__card_style_scss__);
+
 
 
 
@@ -741,11 +743,12 @@ class Card extends __WEBPACK_IMPORTED_MODULE_0__element_element_component__["a" 
   constructor() {
     super('figure');
     this.elem.classList.add('card');
-    this.elem.addEventListener('click', e => {
-    this.elem.classList.add('rotate');
-    setTimeout(e => this.elem.classList.toggle('image'), 300);
-    setTimeout(e => this.elem.classList.remove('rotate'), 1000);
-    });
+    this.elem.randClass = __WEBPACK_IMPORTED_MODULE_1__helpers__["a" /* h */].randClass();
+    // this.elem.addEventListener('click', e => {
+    //   this.elem.classList.add('rotate');
+    //   setTimeout(e => this.elem.classList.toggle('image'), 300);
+    //   setTimeout(e => this.elem.classList.remove('rotate'), 1000);
+    // });
   }
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = Card;
@@ -788,10 +791,6 @@ class Element {
   appendToBody() {
     if(Element.fragmented) document.body.appendChild(Element.fragment);
     else throw new Error('You need create fragment before appending to DOM.');
-  }
-
-  clear() {
-    while(this.elem.children.length) this.elem.removeChild();
   }
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = Element;
@@ -877,10 +876,29 @@ class Wrapper extends __WEBPACK_IMPORTED_MODULE_0__element_element_component__["
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony default export */ __webpack_exports__["a"] = ({
+const h = {
     newArr: length => Array(length).fill(null),
-    find: el => document.querySelector(el)
-});
+    find: el => document.querySelector(el),
+    on: (el, ev, fb, bubble) => el.addEventListener(ev, fb, bubble),
+    create: (elem, inner='') => {
+      const el = document.createElement(elem);
+      el.innerHTML = inner;
+      return el;
+    },
+    remove: function(elem, delElem) {
+      const el = h.find(elem);
+      let onPageWrapper = h.find(delElem);
+      while(onPageWrapper) {
+        el.removeChild(onPageWrapper);
+        onPageWrapper = h.find(delElem)
+      }
+      return el;
+    },
+    randClass: x => h.rand(1, 2)  === 1 ? 'js' : 'haskell',
+    rand: (min, max) => Math.round(Math.random() * (max - min) + min)
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = h;
+
 
 /***/ }),
 
@@ -903,7 +921,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 
-const selector = __WEBPACK_IMPORTED_MODULE_4__helpers__["a" /* default */].find('select');
+const selector = __WEBPACK_IMPORTED_MODULE_4__helpers__["a" /* h */].find('select');
 selector.addEventListener('change', e => {
   __WEBPACK_IMPORTED_MODULE_3__config__["a" /* default */].cards = +e.target.value;
   console.log(__WEBPACK_IMPORTED_MODULE_3__config__["a" /* default */]);
@@ -916,22 +934,28 @@ selector.addEventListener('change', e => {
 //   .append(rules)
 //   .makeFragment()
 //   .appendToBody();
-//----------------------- create and append the main board ----------------------
-const start = __WEBPACK_IMPORTED_MODULE_4__helpers__["a" /* default */].find('.menu > button');
-start.addEventListener('click', e => {
-  let onPageWrapper = __WEBPACK_IMPORTED_MODULE_4__helpers__["a" /* default */].find('section.wrapper');
-  const rows = __WEBPACK_IMPORTED_MODULE_4__helpers__["a" /* default */].newArr(__WEBPACK_IMPORTED_MODULE_3__config__["a" /* default */].rows).map(x => new __WEBPACK_IMPORTED_MODULE_1__components_wrapper_wrapper_component__["a" /* default */]());
-  rows.map(row => {
-    if(onPageWrapper) while(onPageWrapper) {
-      __WEBPACK_IMPORTED_MODULE_4__helpers__["a" /* default */].find('body').removeChild(onPageWrapper);
-      onPageWrapper = __WEBPACK_IMPORTED_MODULE_4__helpers__["a" /* default */].find('section.wrapper')
-    }
-    __WEBPACK_IMPORTED_MODULE_4__helpers__["a" /* default */].newArr(__WEBPACK_IMPORTED_MODULE_3__config__["a" /* default */].cards).map(x => new __WEBPACK_IMPORTED_MODULE_2__components_card_card_component__["a" /* default */]()).map(card => {
-      row.append(card.elem);
-    });
-    row.makeFragment().appendToBody();
-  });
+//----------------------- add event to rotate cards -----------------------------
+__WEBPACK_IMPORTED_MODULE_4__helpers__["a" /* h */].on(__WEBPACK_IMPORTED_MODULE_4__helpers__["a" /* h */].find('body'), 'click', e => {
+  if(e.target.classList.contains('card')) {
+    e.target.classList.add('rotate');
+    setTimeout(x => e.target.classList.toggle(e.target.randClass), 400);
+    setTimeout(x => e.target.classList.remove('rotate'), 1000);
+  }
 });
+
+// h.on(h.find('body'), 'click', function(e) {
+//   console.log(this);
+//   console.log('------------------------------------');
+//   e.path.map(el => console.log(el.tagName));
+//   alert(this.tagName);
+// }, false);
+// h.on(h.find('body p'), 'click', function(e) { e.stopPropagation(); alert(this.tagName)}, false);
+//----------------------- create and append the main board ----------------------
+const start = __WEBPACK_IMPORTED_MODULE_4__helpers__["a" /* h */].find('.menu > button');
+start.addEventListener('click', e => (__WEBPACK_IMPORTED_MODULE_4__helpers__["a" /* h */].remove('body', 'section.wrapper'),
+  __WEBPACK_IMPORTED_MODULE_4__helpers__["a" /* h */].newArr(__WEBPACK_IMPORTED_MODULE_3__config__["a" /* default */].rows).map(x => new __WEBPACK_IMPORTED_MODULE_1__components_wrapper_wrapper_component__["a" /* default */]())
+    .map(row => (__WEBPACK_IMPORTED_MODULE_4__helpers__["a" /* h */].newArr(__WEBPACK_IMPORTED_MODULE_3__config__["a" /* default */].cards).map(x => new __WEBPACK_IMPORTED_MODULE_2__components_card_card_component__["a" /* default */]())
+      .map(card => row.append(card.append(__WEBPACK_IMPORTED_MODULE_4__helpers__["a" /* h */].create('p', '#')).elem)), row.makeFragment().appendToBody()))));
 //-------------------------------------------------------------------------------
 
 /***/ }),
